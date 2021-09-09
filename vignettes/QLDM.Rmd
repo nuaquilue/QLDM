@@ -1,0 +1,65 @@
+---
+title: "QLDM"
+author: "Núria Aquilué"
+date: "2021-09-09"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{QLDM}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+library(QLDM)
+```
+
+## Introduction
+
+The **QLDM** is a package to spatially explicit simulate forest landscape dynamics in Quebec province (Canada). The landscape-scale processes included are forest management (sustainable yield, clear cut, partial cut and salvage logging), wildfires and spruce budworm outbreaks. Forest stands and climatic data are distributed with the package to project Quebec's forest ecosystems dynamics under natural disturbances and climatic change scenarios.
+
+You can learn more about the processes of the modelling framework and potential applications in 
+
+Bouchard, M., Aquilué, N., Périé, C., Lambert, M.-C. 2019. Tree species persistence under warming conditions: A key driver of forest response to climate change. Forest Ecology and Management, 442, 96-104.
+https://doi.org/10.1016/j.foreco.2019.03.040.
+
+
+
+## Package installation
+``` {r install, eval=F}
+devtools::install_github("nuaquilue/QLDM")
+```
+
+
+## Simulations of the Quebec Landscape Dynamic Model
+
+
+#### Example 1
+
+Run one single 80-year replicate of the model including forest management but not natural disturbances under default RCP 4.5 climate projections.
+``` {r ex1, eval=F}
+quebec.ldm(is.clearcut = T, is.partialcut = T, rcp = "rcp45")
+```
+
+#### Example 2
+
+Run one single 80-year replicate of the model including forest management but not natural disturbances under default RCP 4.5 climate projections. Change the `replanif` parameter to not re-calculate sustainable timber supply levels every time step.
+
+``` {r ex2, eval=F}
+custom.params = default.params()
+custom.params$replanif = FALSE
+quebec.ldm(is.clearcut = T, is.partialcut = T, rcp = "rcp45", custom.params = custom.params)
+```
+
+
+#### Example 3
+
+Run one single 80-year replicate of the model including forest management and wildfires under default RCP 4.5 climate projections, and assume that forest species have no capacity to persist in non susitable environmental conditions.
+
+``` {r ex3, eval=F}
+spp.colonize.persist$persist = 0
+quebec.ldm(is.wildfires = T, is.clearcut = T, is.partialcut = T, rcp = "rcp45", spp.colonize.persist)
+```

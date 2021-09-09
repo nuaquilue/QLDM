@@ -1,0 +1,16 @@
+citHeader("To cite 'QLDM' package in publications use:")
+
+citEntry(entry="Manual",
+         title = "Anticipating the impacts of climate change on wildfire-induced declines in harvest levels across Quebec’s forests",
+         author = "Mathieu, Núria, Élise, Jonathan, Marc-André",
+         journal = "CJFR",
+         year = "20XX",
+         textVersion =
+         paste("Bourchard, M., Aquilué, N., Filotas, É., Boucher, J., Parisien, M.-A. (20xx). ",
+               "Anticipating the impacts of climate change on wildfire-induced declines in harvest levels across Quebec’s forests. ",
+               "CJFR",
+               ", DOI nnnn",
+               sep=""),
+         )
+
+citFooter("Thank you for using 'QLDM'")

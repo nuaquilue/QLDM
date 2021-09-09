@@ -1,0 +1,23 @@
+Package: QLDM
+Type: Package
+Title: Quebec Landscape Dynamic Model
+Version: 0.0.1
+Date: 2021-08-26
+Authors@R: c(
+	person('Núria', 'Aquilué', role=c('aut','cre'),
+	email='nuria.aquilue@ctfc.cat'),
+	person('Mathieu', 'Bouchard', role=c('aut'),
+	email='mathieu.bouchard@sbf.ulaval.ca'))
+Description: Simulates forest landscapes dynamics including management, wildfires, insect outbreaks and climate change for the Quebec province (Canada).
+License: GPL (>= 2)
+Encoding: UTF-8
+Depends: R (>= 3.5.0)
+Imports: sp, raster, RANN, reshape2, tidyr, dplyr 
+Suggests: 
+    knitr,
+    ggplot2,
+    rgdal,
+    rmarkdown
+LazyData: true
+RoxygenNote: 7.1.1
+VignetteBuilder: knitr
