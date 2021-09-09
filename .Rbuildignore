@@ -1,0 +1,5 @@
+^inputfiles$
+^inputlyrs$
+^scripts$
+^.*\.Rproj$
+^\.Rproj\.user$
