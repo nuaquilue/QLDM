@@ -29,7 +29,7 @@ in a given fire event [0,1]}
 for attenuation of natural disturbance impacts on timber supply fluctuations. Not yet implemented in the current version.}
    \item{\code{replanif}:  A flag to indicate that timber supply calculation (i.e. recalculation of AAC level) is done at each time step 
 to readjust harvest level to consider changes in FMU age structure (caused by fire) (a posteriori approach).
-If FALSE, AAC level it is calculated only once, durgin the first time step}
+If \code{FALSE}, AAC level it is calculated only once, durgin the first time step}
    \item{\code{timber.supply}: String to indicate the unit of timber supply calculation, 
    either \code{"area.based"} or \code{"volume.based"}}
    \item{\code{lutte}: A flag to indicate the systematic forestation of conifer communities that become broadleaves communities following a perturbation}

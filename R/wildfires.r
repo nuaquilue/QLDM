@@ -130,11 +130,11 @@ wildfires <- function(land, params, baseline.fuel, mem.feux, rcp = NA, pigni = N
     }  
     
     ## Track target area modifications
-    aux.track[2:5] <- round(aux.track[2:5]*km2.pixel)
-    aux.track$target.area <- round(zone.target.area*km2.pixel)
+    aux.track[2:5] <- round(aux.track[2:5])*km2.pixel
+    aux.track$target.area <- round(zone.target.area)*km2.pixel
     track.target <- rbind(track.target, aux.track)
     
-    ## Round it to have entire cells
+    ## Round it to have entire cells, zone.target.area is in pixels
     zone.target.area <- round(zone.target.area)
     
     # Prise en compte du dépassement lors des périodes antérieures

@@ -102,11 +102,13 @@
 #'         \item{\code{run}: Number of replicate.}
 #'         \item{\code{year}: Year YYYY.}
 #'         \item{\code{frz}: Code of the fire regime zone.}
-#'         \item{\code{br}: Code of the species.}
-#'         \item{\code{brvar}: Code .}
-#'         \item{\code{brfuel}: Area in \eqn{km^{2}}.}
-#'         \item{\code{brclima}: Area in \eqn{km^{2}}.}
-#'         \item{\code{target.area}: Area in \eqn{km^{2}}.}
+#'         \item{\code{br}: Baseline area to be burnt derived from MFRI (in \eqn{km^{2}}).}
+#'         \item{\code{brvar}: Baseline area \code{br} with inter-period variability added (in \eqn{km^{2}}).}
+#'         \item{\code{brfuel}: Variable baseline area \code{brvar} modified according to zone-level fuel if
+#'         \code{is.fuel.modifier} (in \eqn{km^{2}}).}
+#'         \item{\code{brclima}: ariable baseline area \code{brvar} modified according to zone-level SEP rate if
+#'         \code{is.clima.modifier}  (in \eqn{km^{2}}).}
+#'         \item{\code{target.area}: Target area to be burnt (in \eqn{km^{2}}).}
 #'       }
 #'    }
 #'    \item{\code{FireRegime}: A data frame of number of fires and burnt area per fire regime zone
@@ -115,12 +117,12 @@
 #'         \item{\code{run}: Number of replicate.}
 #'         \item{\code{year}: Year YYYY.}
 #'         \item{\code{frz}: Code of the fire regime zone.}
-#'         \item{\code{target.area}: Target area to be burnt in \eqn{km^{2}}.}
-#'         \item{\code{nfires}: N.}
-#'         \item{\code{burnt.area}: Area in \eqn{km^{2}}.}
-#'         \item{\code{fire.cycle}: Area in \eqn{km^{2}}.}
-#'         \item{\code{indx.combust}: Area in \eqn{km^{2}}.}
-#'         \item{\code{indx.combust.burnt}: Area in \eqn{km^{2}}.}
+#'         \item{\code{target.area}: Target area to be burnt (in \eqn{km^{2}}).}
+#'         \item{\code{nfires}: Number of fires burnt.}
+#'         \item{\code{burnt.area}: Area effectively burnt (in \eqn{km^{2}}).}
+#'         \item{\code{fire.cycle}: Relative fire return interval (in years).}
+#'         \item{\code{indx.combust}: Fire-zone mean fuel flammability ([0,1]).}
+#'         \item{\code{indx.combust.burnt}: Mean fuel flammability of actual burnt areas ([0,1]).}
 #'       }
 #'    }
 #'    \item{\code{Fires}: A data frame of wildfires
@@ -131,9 +133,9 @@
 #'         \item{\code{frz}: Code of the fire regime zone.}
 #'         \item{\code{fire.id}: Wildfire identificator.}
 #'         \item{\code{wind}: Main wind direction in degrees.}
-#'         \item{\code{target.size}: Target size in pixels to be burnt.}
-#'         \item{\code{burnt.size}: Burnt size in pixels.}
-#'         \item{\code{rem}: Remanent number of pixels to be burnt.}
+#'         \item{\code{target.size}: Target area to be burnt (in \eqn{km^{2}}).}
+#'         \item{\code{burnt.size}: Area effectively burnt (in \eqn{km^{2}}).}
+#'         \item{\code{rem}: Remanent area to be burnt (in \eqn{km^{2}}).}
 #'       }
 #'    }
 #'    \item{\code{BurntFuels}: A data frame of burnt fuel types per fire regime zone
@@ -143,7 +145,7 @@
 #'         \item{\code{year}: Year YYYY.}
 #'         \item{\code{frz}: Code of the fire regime zone.}
 #'         \item{\code{type}: Code of the fuel type:  \code{low}, \code{med} or \code{high}.}
-#'         \item{\code{area}: Area burnt in \eqn{km^{2}}.}
+#'         \item{\code{area}: Area burnt of each fuel category (in \eqn{km^{2}}).}
 #'       }
 #'    }
 #'  }
