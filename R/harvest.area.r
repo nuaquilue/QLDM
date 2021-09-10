@@ -133,8 +133,7 @@ harvest.area <- function(land, params, cc.area, pc.area, km2.pixel){
     
     # When salvaged cells were not enough to satisfy sustained yield level, then harvest some mature 
     # forests unaffected by disturbances (cc.cells.unaff).
-
-    subland.non.pertu <- land.ea.mat.u[land.ea.mat.u$tsfire!=0, ]
+    subland.non.pertu <- land.ea.mat.u[land.ea.mat.u$tsfire!=0 & land.ea.mat.u$tssbw>5, ]
 
     x <- length(subland.non.pertu$cell.id ) # x = disponible
     cc.cells.unaff <- numeric(0)

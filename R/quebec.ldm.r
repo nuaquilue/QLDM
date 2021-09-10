@@ -459,10 +459,8 @@ quebec.ldm <- function(is.wildfires = FALSE, is.sbw = FALSE, is.harvesting = FAL
           # superficie qui passe de feu à res et l'inverse
           plant.1 <- initial.forest.comp[territ] %in% c("SAB","EPN") & land$spp[territ] %in% c("PET","BOJ","ERS") 
           plant.2 <- initial.forest.comp[territ] %in% c("PET","BOJ","ERS") & land$spp[territ] %in% c("SAB","EPN")
-          #print(c(sum(plant.1),sum(plant.2)))
           plant.1a <- plant.1[land$mgmt.unit[territ] == "2751"]
           plant.2a <- plant.2[land$mgmt.unit[territ] == "2751"]
-          #print(c(sum(job1b),sum(job2b))) 
           land$spp[initial.forest.comp%in% c("SAB","EPN")] <- initial.forest.comp[initial.forest.comp%in% c("SAB","EPN")]
         }
       
@@ -489,7 +487,6 @@ quebec.ldm <- function(is.wildfires = FALSE, is.sbw = FALSE, is.harvesting = FAL
       land$age[land$cell.id %in% cc.cells] <- 0
       land$tspcut[land$cell.id %in% c(cc.cells, kill.cells, burnt.cells)] <- 0 # -(land$age.matu/2)  # negative values!!!
       
-
       ## Finally, Aging: Increment Time Since Disturbance and Time Last Forest Composition change by time.step 
       land$age <- land$age + time.step
       land$tscomp <- land$tscomp + time.step

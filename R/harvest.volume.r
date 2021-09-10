@@ -31,18 +31,16 @@ harvest.volume <- function(land, params, cc.vol, pc.vol, km2.pixel){
 
   cat("  Volume-based selection of clearcut and partial cut cells", "\n" )
   
-  land2 <- land[!is.na(land$mgmt.unit),]
+  land2 <- land[!is.na(land$mgmt.unit) & !land$spp=="NonFor",]
   land2$vol <- stand.volume(land2)*km2.pixel*100
   land2 <- land2[order(-land2$vol),]
 
-  units <- as.character(sort(unique(land2$mgmt.unit[!is.na(land2$mgmt.unit)])))
-
-  s.inc <- filter(land2, !is.na(mgmt.unit) & is.na(exclus)) %>% group_by(mgmt.unit) %>% summarise(x=length(mgmt.unit))
-  s.inc.mat <- filter(land2, !is.na(mgmt.unit) & is.na(exclus) & age>age.matu) %>% group_by(mgmt.unit) %>% summarise(x=length(mgmt.unit))
-
-  
   ## For those locations that can be harvested (included), differentiate those that have been burnt or killed
   ## by an outbreak, and then count the young (cannot be salvaged) vs the mature (can be salvaged)
+  s.inc <- filter(land2, !is.na(mgmt.unit) & is.na(exclus)) %>% 
+    group_by(mgmt.unit) %>% summarise(x=length(mgmt.unit))
+  s.inc.mat <- filter(land2, !is.na(mgmt.unit) & is.na(exclus) & age>age.matu) %>% 
+    group_by(mgmt.unit) %>% summarise(x=length(mgmt.unit))
   s.inc.burnt <- filter(land2, !is.na(mgmt.unit) & is.na(exclus) & tsfire==0) %>% 
     group_by(mgmt.unit) %>% summarise(x=length(mgmt.unit))
   s.inc.mat.burnt <- filter(land2, !is.na(mgmt.unit) & is.na(exclus) & tsfire==0 & age>age.matu) %>% 
@@ -58,28 +56,25 @@ harvest.volume <- function(land, params, cc.vol, pc.vol, km2.pixel){
   reg.fail.inc <- filter(land2, !is.na(mgmt.unit) & spp %in% c("EPN", "SAB", "OTH.RES.N"), 
                          tsfire==0, age<=50, is.na(exclus)) %>% group_by(mgmt.unit) %>% summarise(x=length(mgmt.unit))
 
+  ## Even- or uneve-aged stands
   land2 <- mutate(land2, rndm=runif(nrow(land2)))
-
   even <- land2$spp %in% c("EPN", "PET", "SAB", "OTH.RES.N", "OTH.RES.S", "OTH.FEU.N") & is.na(land2$exclus) & land2$rndm<=0.95
   even[land2$spp %in% c("BOJ", "ERS", "OTH.FEU.S")& is.na(land2$exclus) & land2$rndm<=0.05] <- 1
   even[land2$tsfire==0] <- 1
-  
   land.coniferes <- land2[even==1,] 
   land.feuillu.tol <- land2[even==0,] 
-  
   land.ea <- rbind(land.coniferes, land.feuillu.tol)
   s.ea <- group_by(land.ea, mgmt.unit) %>% summarise(x=length(mgmt.unit)) 
-  ### possibilité
-  poss.init <-  cc.vol 
-
+  
   ## Subset the mature even-aged cells from those that are harvestable
   land.rec <- filter(land.ea, age>=age.matu)
   
   # initialisation des variables
   cc.cells.salv.tot <- cc.cells.unaff.tot <- cc.cells <- numeric(0)
   
-  unit=2371 #units[18] # for testing
-  for(unit in units){
+  ### possibilité
+  poss.init <-  cc.vol 
+  for(unit in poss.init$mgmt.unit){
     harv.level.u <- poss.init$x[poss.init$mgmt.unit == unit]
     land.ea.u <- land.ea[land.ea$mgmt.unit==unit,]
     s.ea.u <- length(land.ea.u$cell.id)  
@@ -113,7 +108,7 @@ harvest.volume <- function(land, params, cc.vol, pc.vol, km2.pixel){
     
     # When salvaged cells were not enough to satisfy sustained yield level, then harvest some mature 
     # forests unaffected by disturbances (cc.cells.unaff).
-    subland.non.pertu <- land.ea.mat.u[land.ea.mat.u$TSDist!=0, ]
+    subland.non.pertu <- land.ea.mat.u[land.ea.mat.u$tsfire!=0 & land.ea.mat.u$tssbw>5, ]
     x <- sum(subland.non.pertu$vol )
     cc.cells.unaff <- numeric(0)
     #  arrête la récolte lorsqu'on est rendu à < 40000m3 du but, il y aura parfois des dépassements
@@ -150,13 +145,13 @@ harvest.volume <- function(land, params, cc.vol, pc.vol, km2.pixel){
   s.uea <- group_by(land.uea, mgmt.unit) %>% summarise(x=length(mgmt.unit))    
   s.mat <- group_by(land.rec.pc, mgmt.unit) %>% summarise(x=length(mgmt.unit))    
   
-  harv.level.pc <- pc.vol # read.table("InitialVolumePC.txt", header=T)
+  harv.level.pc <- pc.vol 
   pc.cells <- 0
-  for(unit in unique(land.uea$mgmt.unit)){  #unit=9351
+  for(unit in pc.vol$mgmt.unit){  #unit=9351
     poss.cp.ua <- harv.level.pc$x[harv.level.pc$mgmt.unit==unit]
     cell.dispo.ua <- land.rec.pc[land.rec.pc$mgmt.unit==unit, ]
     x <- sum(cell.dispo.ua$vol )
-    pc.cells.ua <- numeric(0)
+    pc.cells.ua <-  numeric(0)
     xx <- 0
     #  arrête la récolte lorsqu'on est rendu à < 20000m3 du but, il y aura parfois des dépassements
     while(x > 0 & length(cell.dispo.ua$cell.id)>0 & xx < (poss.cp.ua-20000) ) {
