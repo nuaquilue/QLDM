@@ -3,3 +3,5 @@
 ^scripts$
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^doc$
+^Meta$
