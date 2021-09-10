@@ -4,7 +4,7 @@
 \alias{stand.volume}
 \title{Stand volume}
 \usage{
-stand.volume(land)
+stand.volume(land.mgmt)
 }
 \arguments{
 \item{land}{A \code{landscape} data frame with forest stand records in rows}

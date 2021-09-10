@@ -7,8 +7,7 @@
 quebec.ldm(
   is.wildfires = FALSE,
   is.sbw = FALSE,
-  is.clearcut = FALSE,
-  is.partialcut = FALSE,
+  is.harvesting = FALSE,
   custom.params = NA,
   rcp = NA,
   prec.proj = NA,
@@ -27,9 +26,7 @@ quebec.ldm(
 \arguments{
 \item{is.sbw}{A flag to indicate that spruce budworm outbreaks are a simulated process of the model}
 
-\item{is.clearcut}{A flag to indicate that harvesting by clear cuts is a simulated process of the model}
-
-\item{is.partialcut}{A flag to indicate that harvesting by partical cuts is a simulated process of the model}
+\item{is.harvesting}{A flag to indicate that harvesting by clear and partial cuts is a simulated process of the model}
 
 \item{custom.params}{List with the model paramaters and default and/or user-defined values}
 
@@ -70,15 +67,15 @@ A list with the following items:
         \item{\code{area}: Area in km2.}
       }
    }
-   \item{\code{SuitabilityClasses}: A data frame of suitability of potential species per bioclimatic domain, with columns:
+   \item{\code{SuitabilityClass}: A data frame of suitability of potential species per bioclimatic domain, with columns:
      \itemize{
         \item{\code{run}: Number of replicate.}
         \item{\code{year}: Year YYYY.}
         \item{\code{bioclim.domain}: Code of the bioclimatic domain.}
         \item{\code{spp}: Code of the species.}
-        \item{\code{poor}: Area of poor environmental suitability.}
-        \item{\code{med}: Area of intermediate environmental suitability.}
-        \item{\code{good}: Area of good environmental suitability.}
+        \item{\code{poor}: Area in km2 of poor environmental suitability.}
+        \item{\code{med}: Area in km2 of intermediate environmental suitability.}
+        \item{\code{good}: Area in km2 of good environmental suitability.}
       }
    }
    \item{\code{SppByFireZone}: A data frame of species abundance per fire zone, with columns:
@@ -99,7 +96,8 @@ A list with the following items:
         \item{\code{pct}: Relative abundance of the fuel type in the fire regime zone ([0,1]).}
       }
    }
-   \item{\code{Cuts}: A data frame of harvestable area and volume per management unit, with columns:
+   \item{\code{Cuts}: A data frame of harvestable area and volume per management unit 
+   (included if \code{is.harvesting}), with columns:
      \itemize{
         \item{\code{run}: Number of replicate.}
         \item{\code{year}: Year YYYY.}
@@ -196,7 +194,7 @@ library(QLDM)
 data(prec)
 data(temp)
 # Run one single 80-year replicate with forest management and default RCP 4.5 climate projections 
-quebec.ldm(is.clearcut = T, is.partialcut = T, rcp = "rcp45")
+quebec.ldm(is.harvesting = T, rcp = "rcp45")
 }
 
 }

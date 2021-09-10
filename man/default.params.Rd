@@ -26,7 +26,7 @@ in a given fire event [0,1]}
    \item{\code{salvage.rate.FMU}: # Maximum proportion of salvaged burnt wood allowed in the timber supply in each FMU [0,1]}
    \item{\code{hor.plan}: # Time horizon for timber supply calculations (by defaut, periods of 5 years, 5*24==120)}
    \item{\code{a.priori}: # Proportion of AAC to harvest (between 0 and 1). Allows the constitution of a buffer 
-for attenuation of natural disturbance impacts on timber supply fluctuations}
+for attenuation of natural disturbance impacts on timber supply fluctuations. Not yet implemented in the current version.}
    \item{\code{replanif}:   A flag to indicate that timber supply calculation (i.e. recalculation of AAC level) is done at each time step 
 to readjust harvest level to consider changes in FMU age structure (caused by fire) (a posteriori approach).
 If FALSE, AAC level it is calculated only once, durgin the first time step}

@@ -13,24 +13,27 @@
 #' vol = stand.volume(landscape)
 #' 
 
-stand.volume <- function(land){
+stand.volume <- function(land.mgmt){
   
   ## Volum max according to ecological type
-  land$vol.max <- substr(land$eco.type, 1, 2)
-  land$vol.max <- ifelse(is.na(land$vol.max), "V250",
-                      ifelse(land$vol.max=="RE", "V90",
-                      ifelse(land$vol.max=="RS", "V150",
-                      ifelse(land$vol.max=="FE", "V250", "V250"))))
+  land.mgmt$vol.max <- substr(land.mgmt$eco.type, 1, 2)
+  land.mgmt$vol.max <- ifelse(is.na(land.mgmt$vol.max), "V250",
+                       ifelse(land.mgmt$vol.max=="RE", "V90",
+                       ifelse(land.mgmt$vol.max=="RS", "V150",
+                       ifelse(land.mgmt$vol.max=="FE", "V250", "V250"))))
   
   ## Maturity class
-  land$matu[land$age.matu %in% c(40,45,50,60)] <- "M50"
-  land$matu[land$age.matu %in% c(65,70,75,80)] <- "M70"
-  land$matu[land$age.matu %in% c(85,90,95,100,105,110,120)] <- "M90"
+  land.mgmt$matu[land.mgmt$age.matu %in% c(40,45,50,60)] <- "M50"
+  land.mgmt$matu[land.mgmt$age.matu %in% c(65,70,75,80)] <- "M70"
+  land.mgmt$matu[land.mgmt$age.matu %in% c(85,90,95,100,105,110,120)] <- "M90"
+  
+  ## Courbes only computed up to age=150
+  land.mgmt$age <- pmin(land.mgmt$age, 150)
   
   ## Volume per stand maturity class and site index
-  land <- land %>% left_join(courbes, by = c("age","vol.max","matu"))
+  land.mgmt <- land.mgmt %>% left_join(courbes, by = c("age","vol.max","matu"))
   
   ## Return volume per species per management unit
-  return(vol.out=land$vol)
+  return(vol.out=land.mgmt$vol)
 }
  

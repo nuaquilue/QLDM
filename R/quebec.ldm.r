@@ -5,8 +5,7 @@
 #'
 #' @param is.widlfire A flag to indicate that wildfires are a simualted process of the model
 #' @param is.sbw A flag to indicate that spruce budworm outbreaks are a simulated process of the model
-#' @param is.clearcut A flag to indicate that harvesting by clear cuts is a simulated process of the model
-#' @param is.partialcut A flag to indicate that harvesting by partical cuts is a simulated process of the model
+#' @param is.harvesting A flag to indicate that harvesting by clear and partial cuts is a simulated process of the model
 #' @param custom.params List with the model paramaters and default and/or user-defined values 
 #' @param rcp Climate projection, either \code{NA} (default), 'rcp45' or 'rcp85' 
 #' @param prec.proj Data frame with annual precipitation projections for each time step 
@@ -32,15 +31,15 @@
 #'         \item{\code{area}: Area in km2.}
 #'       }
 #'    }
-#'    \item{\code{SuitabilityClasses}: A data frame of suitability of potential species per bioclimatic domain, with columns:
+#'    \item{\code{SuitabilityClass}: A data frame of suitability of potential species per bioclimatic domain, with columns:
 #'      \itemize{
 #'         \item{\code{run}: Number of replicate.}
 #'         \item{\code{year}: Year YYYY.}
 #'         \item{\code{bioclim.domain}: Code of the bioclimatic domain.}
 #'         \item{\code{spp}: Code of the species.}
-#'         \item{\code{poor}: Area of poor environmental suitability.}
-#'         \item{\code{med}: Area of intermediate environmental suitability.}
-#'         \item{\code{good}: Area of good environmental suitability.}
+#'         \item{\code{poor}: Area in km2 of poor environmental suitability.}
+#'         \item{\code{med}: Area in km2 of intermediate environmental suitability.}
+#'         \item{\code{good}: Area in km2 of good environmental suitability.}
 #'       }
 #'    }
 #'    \item{\code{SppByFireZone}: A data frame of species abundance per fire zone, with columns:
@@ -61,7 +60,8 @@
 #'         \item{\code{pct}: Relative abundance of the fuel type in the fire regime zone ([0,1]).}
 #'       }
 #'    }
-#'    \item{\code{Cuts}: A data frame of harvestable area and volume per management unit, with columns:
+#'    \item{\code{Cuts}: A data frame of harvestable area and volume per management unit 
+#'    (included if \code{is.harvesting}), with columns:
 #'      \itemize{
 #'         \item{\code{run}: Number of replicate.}
 #'         \item{\code{year}: Year YYYY.}
@@ -83,7 +83,8 @@
 #'         \item{\code{v.pcut}: Volume partial cut in m3.}
 #'       }
 #'    }
-#'    \item{\code{SppCut}: A data frame of area and volum extracted by clear and partial cut per species and management unit, with columns:
+#'    \item{\code{SppCut}: A data frame of area and volum extracted by clear and partial cut per species 
+#'    and management unit (included if \code{is.harvesting}), with columns:
 #'      \itemize{
 #'         \item{\code{run}: Number of replicate.}
 #'         \item{\code{year}: Year YYYY.}
@@ -156,15 +157,15 @@
 #' data(prec)
 #' data(temp)
 #' # Run one single 80-year replicate with forest management and default RCP 4.5 climate projections 
-#' quebec.ldm(is.clearcut = T, is.partialcut = T, rcp = "rcp45")
+#' quebec.ldm(is.harvesting = T, rcp = "rcp45")
 #' }
 #'
 
 
-quebec.ldm <- function(is.wildfires = FALSE, is.sbw = FALSE, is.clearcut = FALSE, is.partialcut = FALSE, 
-                       custom.params = NA, rcp = NA, prec.proj = NA, temp.proj = NA, timber.supply = "area.based",
-                       pigni = NA, nrun = 1, time.step = 5, time.horizon = 80,  
-                       save.land = FALSE, out.seq = NA, out.path = NA, ...){
+quebec.ldm <- function(is.wildfires = FALSE, is.sbw = FALSE, is.harvesting = FALSE,
+                       custom.params = NA, rcp = NA, prec.proj = NA, temp.proj = NA, 
+                       timber.supply = "area.based", pigni = NA, nrun = 1, time.step = 5, 
+                       time.horizon = 80, save.land = FALSE, out.seq = NA, out.path = NA, ...){
 
   options(dplyr.summarise.inform=F)
   
@@ -176,11 +177,10 @@ quebec.ldm <- function(is.wildfires = FALSE, is.sbw = FALSE, is.clearcut = FALSE
   ## lenght(time.seq) is 16
   time.seq <- seq(time.step, time.horizon, time.step) 
   ## Processes recurrence (in years) 
-  fire.step <- cc.step <- pc.step <- time.step
+  fire.step <- harvest.step <- time.step
   ## Set the scheduling of the processes
   fire.schedule <- seq(time.step, time.horizon, fire.step)
-  cc.schedule <- seq(time.step, time.horizon, cc.step)
-  pc.schedule <- seq(time.step, time.horizon, pc.step)
+  harvest.schedule <- seq(time.step, time.horizon, harvest.step)
   sbw.schedule <- c(5,35,70)
   if(save.land){
     if(is.na(out.seq)){
@@ -321,21 +321,7 @@ quebec.ldm <- function(is.wildfires = FALSE, is.sbw = FALSE, is.clearcut = FALSE
            summarise(poor=sum(suit.clim==0)*km2.pixel, med=sum(suit.clim==0.5)*km2.pixel, good=sum(suit.clim==1)*km2.pixel) 
     track.suit.class <- rbind(track.suit.class, data.frame(run=irun, year=params$year.ini, aux))
     rm(suitab); rm(aux)
-    
-    ### coupe: vecteur a priori
-    if(params$a.priori < 1){
-      ## need seuils.a.priori.txt
-      a.priori.v <- as.data.frame(cbind(as.character(unique(land$mgmt.unit)),a.priori))
-      apri.par.ua <- read.table("outputs/seuils.a.priori.txt", header = TRUE,  sep="\t")
-      apri.par.ua2 <- apri.par.ua[apri.par.ua$sc.no==scn.art-2,]
-      a.priori.v <- merge(a.priori.v, apri.par.ua2, by.x = "V1", 
-            by.y = "list.UA", all.x = TRUE, all.y = T)
-      a.priori.v$new <- 1-a.priori.v$baisse.ua
-      a.priori.v$new[is.na(a.priori.v$new)] <- 1
-      a.priori.v <- a.priori.v[,c(1,6)]
-    }
 
-    
     ## Simulation of one time step
     for(t in time.seq){
       
@@ -365,31 +351,18 @@ quebec.ldm <- function(is.wildfires = FALSE, is.sbw = FALSE, is.clearcut = FALSE
       ## 1. TIMBER SUPPLY CALCULATION
       ## It is only done during the first period if replanning is FALSE, otherwise, it is calculated each time step
       ## 1.1. AREA BASED
-      if((t==time.seq[1] | params$replanif) & timber.supply=="area.based" & is.clearcut & t %in% cc.schedule){
+      if((t==time.seq[1] | params$replanif) & timber.supply=="area.based" & is.harvesting & t %in% harvest.schedule){
           TS.CC.area <- timber.area(land, params)
-          TS.PC.area <- timber.partial.area(land, params, pc.step)  
+          TS.PC.area <- timber.partial.area(land, params, time.step)  
       }
-      if(t==time.seq[1] & is.clearcut & timber.supply=="area.based"){
+      if(t==time.seq[1] & is.harvesting & timber.supply=="area.based"){
         ref.harv.level = TS.CC.area
       }
-      if(params$a.priori < 1 & is.clearcut & timber.supply=="area.based") {
-        if(params$replanif == 1){
-          TS.CC.area[,2] <- pmin(ref.harv.level[,2],TS.CC.area[,2]*params$a.priori)
-        } 
-        else{
-          #TS.CC.area[,2] <- ref.harv.level[,2]*a.priori 
-          temp <- merge(ref.harv.level, a.priori.v, by.x = "mgmt.unit", 
-          by.y = "V1", all.x = TRUE, all.y = T)
-          # baisse de 5% par période de 5 ans (1% par an)
-          temp$new <-  pmax(temp$new,(1-(0.01*t)))
-          TS.CC.area[,2] <- temp$x * temp$new
-        }
-      }  
       
       ## 1.2. VOLUME BASED - in development
-      if((t==time.seq[1] | params$replanif) & timber.supply=="volume.based" & is.clearcut & t %in% cc.schedule){
+      if((t==time.seq[1] | params$replanif) & timber.supply=="volume.based" & is.harvesting & t %in% harvest.schedule){
         TS.CC.vol <- timber.volume(land, params, time.step)
-        TS.PC.vol <- timber.partial.volume(land, params, pc.step)
+        TS.PC.vol <- timber.partial.volume(land, params, time.step)
       }
       
       ## 2. FIRE
@@ -425,7 +398,7 @@ quebec.ldm <- function(is.wildfires = FALSE, is.sbw = FALSE, is.clearcut = FALSE
       ## 4. SELECTION OF HARVESTED CELLS BASED ON TIMBER SUPPLY
       cc.cells <- pc.cells <- integer()
       ## 4.1. AREA BASED
-      if(timber.supply == "area.based" & is.clearcut & t %in% cc.schedule){      
+      if(timber.supply == "area.based" & is.harvesting & t %in% harvest.schedule){      
         harv.out <- harvest.area(land, params, TS.CC.area, TS.PC.area, km2.pixel)
         cc.cells <- harv.out[[1]]
         pc.cells <- harv.out[[2]]
@@ -439,7 +412,7 @@ quebec.ldm <- function(is.wildfires = FALSE, is.sbw = FALSE, is.clearcut = FALSE
       }
       
       ## 4.2. VOLUME BASED 
-      if(timber.supply == "volume.based" & is.clearcut & t %in% cc.schedule){
+      if(timber.supply == "volume.based" & is.harvesting & t %in% harvest.schedule){
         harv.out <- harvest.volume(land, params, TS.CC.vol, TS.PC.vol, km2.pixel)
         cc.cells <- harv.out[[1]]
         pc.cells <- harv.out[[2]]
@@ -450,8 +423,7 @@ quebec.ldm <- function(is.wildfires = FALSE, is.sbw = FALSE, is.clearcut = FALSE
         # Done with clear cuts
         land$tspcut[land$cell.id %in% pc.cells] <- 0
         land$tsccut[land$cell.id %in% cc.cells] <- 0
-        cc.schedule <- cc.schedule[-1]  
-        pc.schedule <- pc.schedule[-1]  
+        harvest.schedule <- harvest.schedule[-1]  
       }
       
 
@@ -564,7 +536,7 @@ quebec.ldm <- function(is.wildfires = FALSE, is.sbw = FALSE, is.clearcut = FALSE
   cat("\n", "C. Build outputs...\n")
   # cat("Build outputs list", "\n")
   res <- list(SppByAgeClass = track.spp.age.class[-1,],
-              SuitabilityClasses = track.suit.class[-1,],
+              SuitabilityClass = track.suit.class[-1,],
               SppByFireZone = track.spp.firezone[-1,],
               FuelByFireZone = track.fuel[-1,],
               Cuts = track.cut[-1,],
