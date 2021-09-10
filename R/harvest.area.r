@@ -55,10 +55,9 @@ harvest.area <- function(land, params, cc.area, pc.area, km2.pixel){
   ## Also, look for zones at defforestation risk, both included and excluded
   reg.fail.ex <- filter(land2, !is.na(mgmt.unit) & spp %in% c("EPN", "SAB", "OTH.RES.N"), 
                         tsfire==0, age<=params$age.seed, temp < 1.5, runif(length(land2$temp))<params$p.failure, !is.na(exclus)) %>%
-    group_by(mgmt.unit) %>% summarise(x=length(mgmt.unit))
+                        group_by(mgmt.unit) %>% summarise(x=length(mgmt.unit))
   reg.fail.inc <- filter(land2, !is.na(mgmt.unit) & spp %in% c("EPN", "SAB", "OTH.RES.N"), 
-                         tsfire==0, age<=params$age.seed, temp < 1.5, runif(length(land2$temp))<params$p.failure, is.na(exclus)) %>%
-                          group_by(mgmt.unit) %>% summarise(x=length(mgmt.unit))
+                         tsfire==0, age<=params$age.seed, temp < 1.5, runif(length(land2$temp))<params$p.failure, is.na(exclus)) %>%                         group_by(mgmt.unit) %>% summarise(x=length(mgmt.unit))
 
   
   #land2 <- mutate(land2, rndm=runif(nrow(land2)))
@@ -113,7 +112,6 @@ harvest.area <- function(land, params, cc.area, pc.area, km2.pixel){
     # sélection de cellules récupérables en tenant compte
     # des contraintes a priori (maximum salvage rate, etc.)
     cell.salv.available <- subland.salv.mature$cell.id #sample(subland.salv.mature$cell.id, round(salvage.rate.event*nrow(subland.salv.mature)), replace=FALSE)
-    #table(subland.salv.mature$spp)        
      
     #############################################
     # Randomly select cells among the even-aged mature cells present in non-protected areas
@@ -156,11 +154,9 @@ harvest.area <- function(land, params, cc.area, pc.area, km2.pixel){
     cc.cells.unaff.tot <- c(cc.cells.unaff.tot, cc.cells.unaff)
     
   }
-  length(cc.cells)
- 
-  ############################
-  ################## partial cuts
   
+ 
+  ################## partial cuts ############################
   land.uea <- land.feuillu.tol
   s.uea <- group_by(land.uea, mgmt.unit) %>% summarise(x=length(mgmt.unit)) 
   
@@ -200,7 +196,7 @@ harvest.area <- function(land, params, cc.area, pc.area, km2.pixel){
       pc.cells <- c(pc.cells, pc.cells.ua)   
   }    
   
-  length(pc.cells)
+  
   ################################################# TRACKING #################################################
   ## Area salvaged and non-salvaged, clearcut
   ## areas are in cells, volumes are in m3
@@ -238,16 +234,18 @@ harvest.area <- function(land, params, cc.area, pc.area, km2.pixel){
            left_join(a.salv, by="mgmt.unit") %>% left_join(a.unaff, by="mgmt.unit") %>%
            left_join(v.salv, by="mgmt.unit") %>% left_join(v.unaff, by="mgmt.unit") %>%  
            left_join(a.pcut, by="mgmt.unit") %>% left_join(v.pcut, by="mgmt.unit")
-  names(track)[2:ncol(track)] <- c("tot.inc", "even.age", "a.mat", "a.inc.burnt", "a.inc.mat.burnt",
+  names(track)[2:ncol(track)] <- c("a.inc", "a.even.age", "a.mat.pc", "a.inc.burnt", "a.inc.mat.burnt",
      "a.inc.kill", "a.inc.mat.kill", "a.reg.fail.ex", "a.reg.fail.in", "a.salvaged", "a.unaff","v.salv",
      "v.unaff","a.pcut","v.pcut")
   track[is.na(track)] <- 0
+  track[,c(2:12,15)] = track[,c(2:12,15)]*km2.pixel
   
   #### merge, species level
   spp.track <- left_join(spp.ccut, spp.ccut.vol, by=c("mgmt.unit", "spp")) %>% 
                left_join(spp.pcut, by=c("mgmt.unit", "spp")) %>% left_join(spp.pcut.vol, by=c("mgmt.unit", "spp"))
   names(spp.track)[3:ncol(spp.track)] <- c("area.ccut","vol.ccut", "area.pcut","vol.pcut")
   spp.track[is.na(spp.track)] <- 0
+  spp.track[,c(3,5)] = spp.track[,c(3,5)]*km2.pixel
   
   ## Return the cell.id of the cut locations and the tracking info
   return(list(cc.cells=cc.cells, pc.cells=pc.cells, track.cut=track, spp.track=spp.track))  

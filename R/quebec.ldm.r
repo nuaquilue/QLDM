@@ -28,7 +28,7 @@
 #'         \item{\code{mgmt.unit}: Code of the forest management unit (FMU).}
 #'         \item{\code{spp}: Code of the species.}
 #'         \item{\code{age.class}: Code of the age class, \code{C10}, \code{C30}, \code{C50}, \code{C70}, \code{C90}, and \code{OLD}.}
-#'         \item{\code{area}: Area in km2.}
+#'         \item{\code{area}: Area in \eqn{km^{2}}.}
 #'       }
 #'    }
 #'    \item{\code{SuitabilityClass}: A data frame of suitability of potential species per bioclimatic domain, with columns:
@@ -37,9 +37,9 @@
 #'         \item{\code{year}: Year YYYY.}
 #'         \item{\code{bioclim.domain}: Code of the bioclimatic domain.}
 #'         \item{\code{spp}: Code of the species.}
-#'         \item{\code{poor}: Area in km2 of poor environmental suitability.}
-#'         \item{\code{med}: Area in km2 of intermediate environmental suitability.}
-#'         \item{\code{good}: Area in km2 of good environmental suitability.}
+#'         \item{\code{poor}: Area in \eqn{km^{2}} of poor environmental suitability.}
+#'         \item{\code{med}: Area in \eqn{km^{2}} of intermediate environmental suitability.}
+#'         \item{\code{good}: Area in \eqn{km^{2}} of good environmental suitability.}
 #'       }
 #'    }
 #'    \item{\code{SppByFireZone}: A data frame of species abundance per fire zone, with columns:
@@ -48,7 +48,7 @@
 #'         \item{\code{year}: Year YYYY.}
 #'         \item{\code{frz}: Code of the fire regime zone.}
 #'         \item{\code{spp}: Code of the species.}
-#'         \item{\code{area}: Area in km2.}
+#'         \item{\code{area}: Area in \eqn{km^{2}}.}
 #'       }
 #'    }
 #'    \item{\code{FuelByFireZone}: A data frame of fuel type per fire zone, with columns:
@@ -66,21 +66,21 @@
 #'         \item{\code{run}: Number of replicate.}
 #'         \item{\code{year}: Year YYYY.}
 #'         \item{\code{mgmt.unit}: Code of the forest management unit (FMU).}
-#'         \item{\code{tot.inc}: Code of the species.}
-#'         \item{\code{even.age}: Code .}
-#'         \item{\code{a.mat}: Area in km2.}
-#'         \item{\code{a.inc.burnt}: Area in km2.}
-#'         \item{\code{a.inc.mat.burnt}: Area in km2.}
-#'         \item{\code{a.inc.kill}: Area in km2.}
-#'         \item{\code{a.inc.mat.kill}: Area in km2.}
-#'         \item{\code{a.reg.fail.ex}: Area in km2.}
-#'         \item{\code{a.reg.fail.in}: Area in km2.}
-#'         \item{\code{a.salvaged}: Area in km2.}
-#'         \item{\code{a.unaff}: Area in km2.}
-#'         \item{\code{v.salv}: Volume in m3.}
-#'         \item{\code{v.unaff}: Volume in m3.}
-#'         \item{\code{a.pcut}: Area partial cut in km2.}
-#'         \item{\code{v.pcut}: Volume partial cut in m3.}
+#'         \item{\code{a.inc}: Area that can be harvested, i.e. non-protected and FMU informed (in \eqn{km^{2}}).}
+#'         \item{\code{a.even.age}: Area within \code{a.inc} of mature stand, i.e.\code{age>age.matu} (in \eqn{km^{2}}).}
+#'         \item{\code{a.mat.pc}: Area to be managed under a partial-cut regime (in \eqn{km^{2}}).}
+#'         \item{\code{a.inc.burnt}: Area within \code{a.inc} burnt in the current time step (in \eqn{km^{2}}).}
+#'         \item{\code{a.inc.mat.burnt}: Area within \code{a.inc} of mature stands burnt in the current time step (in \eqn{km^{2}}).}
+#'         \item{\code{a.inc.kill}: Area within \code{a.inc} killed by SBW in the previous or current time step (in \eqn{km^{2}}).}
+#'         \item{\code{a.inc.mat.kill}: Area within \code{a.inc} of mature stands killed by SBW in the previous or current time step (in \eqn{km^{2}}).}
+#'         \item{\code{a.reg.fail.ex}: Protected area at defforestation risk (in \eqn{km^{2}}).}
+#'         \item{\code{a.reg.fail.in}: Non-protected area at defforestation risk (in \eqn{km^{2}}).}
+#'         \item{\code{a.salvaged}: Salvaged and clear-cut area (in \eqn{km^{2}}).}
+#'         \item{\code{a.unaff}: Clear-cut area unaffected by disturbances (in \eqn{km^{2}}).}
+#'         \item{\code{v.salv}: Salvaged and clear-cut volume (in \eqn{m^{3}}).}
+#'         \item{\code{v.unaff}: Clear-cut volume unaffected by disturbances (in \eqn{m^{3}}).}
+#'         \item{\code{a.pcut}: Area partial cut (in \eqn{km^{2}}).}
+#'         \item{\code{v.pcut}: Volume partial cut (in \eqn{m^{3}}).}
 #'       }
 #'    }
 #'    \item{\code{SppCut}: A data frame of area and volum extracted by clear and partial cut per species 
@@ -90,10 +90,10 @@
 #'         \item{\code{year}: Year YYYY.}
 #'         \item{\code{mgmt.unit}: Code of the forest management unit (FMU).}
 #'         \item{\code{spp}: Code of the species.}
-#'         \item{\code{area.ccut}: Area clear cut in km2.}
-#'         \item{\code{vol.ccut}: Volume clear cut in m3.}
-#'         \item{\code{area.pcut}: Area partial cut in km2.}
-#'         \item{\code{vol.pcut}: Volume partial cut in km2.}
+#'         \item{\code{area.ccut}: Clear-cut area (in \eqn{km^{2}}).}
+#'         \item{\code{vol.ccut}: Clear-cut volume (in \eqn{m^{3}}).}
+#'         \item{\code{area.pcut}: Partial cut area (in \eqn{km^{2}}).}
+#'         \item{\code{vol.pcut}: Partial cut volume (in \eqn{m^{3}}).}
 #'       }
 #'    }
 #'    \item{\code{BurntRates}: A data frame of target area to be burnt per fire regime zone 
@@ -104,9 +104,9 @@
 #'         \item{\code{frz}: Code of the fire regime zone.}
 #'         \item{\code{br}: Code of the species.}
 #'         \item{\code{brvar}: Code .}
-#'         \item{\code{brfuel}: Area in km2.}
-#'         \item{\code{brclima}: Area in km2.}
-#'         \item{\code{target.area}: Area in km2.}
+#'         \item{\code{brfuel}: Area in \eqn{km^{2}}.}
+#'         \item{\code{brclima}: Area in \eqn{km^{2}}.}
+#'         \item{\code{target.area}: Area in \eqn{km^{2}}.}
 #'       }
 #'    }
 #'    \item{\code{FireRegime}: A data frame of number of fires and burnt area per fire regime zone
@@ -115,12 +115,12 @@
 #'         \item{\code{run}: Number of replicate.}
 #'         \item{\code{year}: Year YYYY.}
 #'         \item{\code{frz}: Code of the fire regime zone.}
-#'         \item{\code{target.area}: Target area to be burnt in km2.}
+#'         \item{\code{target.area}: Target area to be burnt in \eqn{km^{2}}.}
 #'         \item{\code{nfires}: N.}
-#'         \item{\code{burnt.area}: Area in km2.}
-#'         \item{\code{fire.cycle}: Area in km2.}
-#'         \item{\code{indx.combust}: Area in km2.}
-#'         \item{\code{indx.combust.burnt}: Area in km2.}
+#'         \item{\code{burnt.area}: Area in \eqn{km^{2}}.}
+#'         \item{\code{fire.cycle}: Area in \eqn{km^{2}}.}
+#'         \item{\code{indx.combust}: Area in \eqn{km^{2}}.}
+#'         \item{\code{indx.combust.burnt}: Area in \eqn{km^{2}}.}
 #'       }
 #'    }
 #'    \item{\code{Fires}: A data frame of wildfires
@@ -143,7 +143,7 @@
 #'         \item{\code{year}: Year YYYY.}
 #'         \item{\code{frz}: Code of the fire regime zone.}
 #'         \item{\code{type}: Code of the fuel type:  \code{low}, \code{med} or \code{high}.}
-#'         \item{\code{area}: Area burnt in km2.}
+#'         \item{\code{area}: Area burnt in \eqn{km^{2}}.}
 #'       }
 #'    }
 #'  }
@@ -257,7 +257,7 @@ quebec.ldm <- function(is.wildfires = FALSE, is.sbw = FALSE, is.harvesting = FAL
   track.fuel <- data.frame(run=NA, year=NA, frz=NA, type=NA, pct=NA)
   # track.sprd <- data.frame(run=NA, year=NA, frz=NA, fire.id=NA, cell.id=NA, step=NA, flam=NA, wind=NA, sr=NA, pb=NA, burn=NA)
   track.burnt.fuel <- data.frame(run=NA, year=NA, frz=NA, type=NA, area=NA)
-  track.cut <- data.frame(run=NA, year=NA, mgmt.unit=NA, tot.inc=NA, even.age=NA, a.mat=NA, a.inc.burnt=NA, 
+  track.cut <- data.frame(run=NA, year=NA, mgmt.unit=NA, a.inc=NA, a.even.age=NA, a.mat.pc=NA, a.inc.burnt=NA, 
                            a.inc.mat.burnt=NA, a.inc.kill=NA, a.inc.mat.kill=NA, a.reg.fail.ex=NA, a.reg.fail.in=NA,
                            a.salvaged=NA, a.unaff=NA, v.salv=NA, v.unaff=NA, a.pcut=NA, v.pcut=NA)
   track.spp.cut <- data.frame(run=NA, year=NA, mgmt.unit=NA, spp=NA, area.ccut=NA, vol.ccut=NA,

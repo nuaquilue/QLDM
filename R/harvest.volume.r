@@ -211,16 +211,18 @@ harvest.volume <- function(land, params, cc.vol, pc.vol, km2.pixel){
            left_join(a.salv, by="mgmt.unit") %>% left_join(a.unaff, by="mgmt.unit") %>%
            left_join(v.salv, by="mgmt.unit") %>% left_join(v.unaff, by="mgmt.unit") %>%  
            left_join(a.pcut, by="mgmt.unit") %>% left_join(v.pcut, by="mgmt.unit")
-  names(track)[2:ncol(track)] <- c("tot.inc", "even.age", "a.mat", "a.inc.burnt", "a.inc.mat.burnt",
+  names(track)[2:ncol(track)] <- c("a.inc", "a.even.age", "a.mat.pc", "a.inc.burnt", "a.inc.mat.burnt",
      "a.inc.kill", "a.inc.mat.kill", "a.reg.fail.ex", "a.reg.fail.in", "a.salvaged", "a.unaff","v.salv",
      "v.unaff","a.pcut","v.pcut")
   track[is.na(track)] <- 0
+  track[,c(2:12,15)] = track[,c(2:12,15)]*km2.pixel
   
   #### merge, species level
   spp.track <- left_join(spp.ccut, spp.ccut.vol, by=c("mgmt.unit", "spp")) %>% 
                            left_join(spp.pcut, by=c("mgmt.unit", "spp")) %>%
                                        left_join(spp.ccut.vol, by=c("mgmt.unit", "spp"))
   names(spp.track)[3:ncol(spp.track)] <- c("area.ccut","vol.ccut", "area.pcut","vol.pcut")
+  spp.track[,c(3,5)] = spp.track[,c(3,5)]*km2.pixel
   
   ## Return the cell.id of the cut locations and the tracking info
   return(list(cc.cells=cc.cells, pc.cells=pc.cells, track.cut=track, spp.track=spp.track))  
