@@ -1,5 +1,7 @@
 # QLDM - Quebec Landscape Dynamic Model
 
+## Introduction
+
 The `QLDM` package provides a set of functions to simulate landscape-scale processes that influence the structure and composition of forest stands in a region, such as forest management (timber harvesting, salvagge logging), wildfires and insect outbreaks.
 
 The Quebec Landscape Dynamic Model is initialized for the commercial forests of Quebec province (Canada) in 2020. It is a spatially explicit model calibrated to work at 2 km of spatial resolution and 5-year time step.

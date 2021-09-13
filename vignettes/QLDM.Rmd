@@ -1,7 +1,7 @@
 ---
 title: "QLDM"
 author: "Núria Aquilué"
-date: "2021-09-09"
+date: "2021-09-13"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{QLDM}
@@ -14,7 +14,9 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
-library(QLDM)
+library(raster)
+library(rasterVis)
+library(tidyverse)
 ```
 
 ## Introduction
@@ -27,21 +29,67 @@ Bouchard, M., Aquilué, N., Périé, C., Lambert, M.-C. 2019. Tree species persi
 https://doi.org/10.1016/j.foreco.2019.03.040.
 
 
-
 ## Package installation
 ``` {r install, eval=F}
 devtools::install_github("nuaquilue/QLDM")
 ```
 
+## Model initialization
+
+The Quebec Landscape Dynamic Model is initialized for the commercial forests of Quebec province (Canada) in 2020. Forest stands are characterized by the dominant tree species or group of species, stand age, age of maturity, soil type (`A` - Clay, `O` - Organic, `R` - Rock, `S` - Sand, `T` - Till), the status of protection, the fire regime zone, and the managment unit.
+
+The main tree species or group of species considered are:
+
+- `BOJ`: Yellow birch (*Betula alleghaniensis*)
+- `EPN`: Black spruce (*Picea mariana*)
+- `ERS`: Sugar maple (*Acer saccharum*)
+- `PET`: Trembling aspen (*Populus tremuloides*)
+- `SAB`: Balsam fir (*Abies balsamea*)
+- `OTH.FEU.N`: Other boreal hardwoods (e.g. White birch (*Betula papyrifera*))
+- `OTH.FEU.S`: Other temperate hardwoods (e.g. Basswood (*Tilia americana*), Beech (*Fagus grandifolia*), Oaks (*Quercus*), Red maple (*Acer rubrum*))
+- `OTH.RES.N`: Other boreal conifers (e.g. Jack pine (*Pinus banksiana*), Tamarack (*Larix laricina*), White spruce (*Picea glauca*))
+- `OTH.RES.S`: Other temperate conifers (White pine (*Pinus strobus*), Red pine (*Pinus resinosa*), Eastern hemlock (*Tsuga canadensis*), Red spruce (*Picea rubens*))
+
+The `NonFor` category identifies the locations that are not currently forest areas.  
+
+Included in the **QLDM** package are the data frame `landscape` that contains the forest stands characteristics and the raster `mask` that describes the spatial distribution of the forest stands.
+
+``` {r data, eval=T, fig.width = 8, fig.height=6}
+library(QLDM)
+map = mask
+map[!is.na(map[])] = landscape$spp
+map = as.factor(map)
+rat = levels(map)[[1]] # Extract the RAT
+rat$spp <-  sort(unique(landscape$spp))
+levels(map) <- rat
+spp.color=c("darkgoldenrod1", "grey30", "darkred", "white", "darkorange4", "darkorange2", "darkolivegreen4", "darkolivegreen2", "blueviolet", "blue3")
+levelplot(map, main="Forest tree species in Quebec (2020)", col.regions=spp.color, scales=list(draw=FALSE))
+```
+
+The historical annual mean temperature and precipitation at the stand scale are also reported in the `landscape` data frame. Moreover, the **QLDM** package includes RCP4.5 and RCP8.5 temperature and precipitation projections from the MIROC_ESM_CHEM global circulation model at 2 km of spatial resolution and 5-year of temporal resolution (`temp_rcp45`, `prec_rcp45`, `temp_rcp85`, and `prec_rcp85`, respectively).
+
+``` {r clim, eval=T, fig.width = 8, fig.height=6}
+df = data.frame(cell.id=1:ncell(mask)) %>% left_join(temp_rcp85, by="cell.id")
+map = mask
+map[] = df[,2]
+b = stack(map)
+for(i in 3:ncol(temp_rcp85)){
+  map[] = df[,i]
+  b = stack(b, map)
+}
+names(b) = paste("Y", seq(2020,2095,5))
+levelplot(b, main="RCP8.5 Temperature projections for Quebec", scales=list(draw=FALSE),
+par.settings = BuRdTheme)
+```
+
 
 ## Simulations of the Quebec Landscape Dynamic Model
-
 
 #### Example 1
 
 Run one single 80-year replicate of the model including forest management but not natural disturbances under default RCP 4.5 climate projections.
 ``` {r ex1, eval=F}
-quebec.ldm(is.clearcut = T, is.partialcut = T, rcp = "rcp45")
+quebec.ldm(is.harvesting = T, rcp = "rcp45")
 ```
 
 #### Example 2
@@ -51,7 +99,7 @@ Run one single 80-year replicate of the model including forest management but no
 ``` {r ex2, eval=F}
 custom.params = default.params()
 custom.params$replanif = FALSE
-quebec.ldm(is.clearcut = T, is.partialcut = T, rcp = "rcp45", custom.params = custom.params)
+quebec.ldm(is.harvesting = T, rcp = "rcp45", custom.params = custom.params)
 ```
 
 
@@ -61,5 +109,5 @@ Run one single 80-year replicate of the model including forest management and wi
 
 ``` {r ex3, eval=F}
 spp.colonize.persist$persist = 0
-quebec.ldm(is.wildfires = T, is.clearcut = T, is.partialcut = T, rcp = "rcp45", spp.colonize.persist)
+quebec.ldm(is.wildfires = T, is.harvesting = T, rcp = "rcp45", spp.colonize.persist)
 ```
