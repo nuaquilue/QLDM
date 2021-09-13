@@ -18,7 +18,7 @@ Additionally, users can have help to run package functions directly as package v
 
 ```R
 devtools::install_github("nuaquilue/QLDM", 
-                         build_manual = TRUE),
+                         build_manual = TRUE,
                          build_vignettes = TRUE)
 ```
 
