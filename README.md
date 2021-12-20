@@ -25,3 +25,5 @@ devtools::install_github("nuaquilue/QLDM",
 ## References
 
 Bouchard, M., Aquilué, N., Périé, C., Lambert, M.-C. 2019. Tree species persistence under warming conditions: A key driver of forest response to climate change. Forest Ecology and Management, 442, 96-104. https://doi.org/10.1016/j.foreco.2019.03.040.
+
+Bouchard, M., Aquilué, N., Filotas, É., Boucher, J., Parisien, M. Forecasting wildfire-induced declines in potential forest harvest levels across Quebec. Canadian Journal of Forest Research (submitted).
